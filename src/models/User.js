@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const User = new mongoose.Schema({
-    display_name: {
+    fullname: {
         type: String,
         required: true,
     },
@@ -14,15 +14,10 @@ const User = new mongoose.Schema({
         type: String,
         required: true,
     },
-    bio: {
-        type: String,
-        maxlength: 500,
-    },
     timestamp: {
         type: Date,
         default: Date.now,
-    },
-    history: Array,
+    }
 });
 
 
