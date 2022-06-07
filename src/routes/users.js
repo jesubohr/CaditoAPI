@@ -39,13 +39,13 @@ router.post('/prev-login', async (req, res) => {
 });
 
 router.post('/register', async (req, res) => {
-    const { display_name, username, password, bio } = req.body;
-    if (!display_name || !username || !password || !bio) return res.status(400).send({ error: 'Missing fields' });
+    const { fullname, username, password } = req.body;
+    if (!fullname || !username || !password) return res.status(400).send({ error: 'Missing fields' });
 
     const userName = await User.findOne({ username: username });
     if (userName) return res.status(400).json({ error: 'Username already exists' });
 
-    const newUser = new User({ display_name, username, password, bio });
+    const newUser = new User({ fullname, username, password });
     newUser.password = await newUser.encryptPassword(password);
     await newUser.save();
     res.json({ _id: newUser._id, success: 'User created' });
