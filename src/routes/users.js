@@ -4,13 +4,22 @@ const SessionToken = require('../utils/Tokens');
 
 router.get('/', async (req, res) => {
     const { user_id } = req.query;
-    const user = await User.findById({ _id: user_id });
-    if (!user) return res.status(404).json({ error: 'User not found' });
-    res.json(user);
+    if (!user_id) return res.status(400).send({ error: 'Missing user_id' });
+
+    try {
+        const user = await User.findById({ _id: user_id });
+        if (!user) return res.status(404).json({ error: 'User not found' });
+        res.json(user);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ error: 'Invalid user_id' });
+    }
 });
 
 router.post('/login', async (req, res) => {
     const { username, password } = req.body;
+    if (!username || !password) return res.status(400).send({ error: 'Missing username or password' });
+
     const user = await User.findOne({ username: username });
     if (!user) return res.status(404).json({ error: 'User not found' });
 
@@ -23,12 +32,15 @@ router.post('/login', async (req, res) => {
 
 router.post('/prev-login', async (req, res) => {
     const { user_id } = req.body;
+    if (!user_id) return res.status(400).send({ error: 'Missing user_id' });
+
     const userToken = SessionToken.find(user_id);
     res.json({ _id: userToken });
 });
 
 router.post('/register', async (req, res) => {
     const { display_name, username, password, bio } = req.body;
+    if (!display_name || !username || !password || !bio) return res.status(400).send({ error: 'Missing fields' });
 
     const userName = await User.findOne({ username: username });
     if (userName) return res.status(400).json({ error: 'Username already exists' });
